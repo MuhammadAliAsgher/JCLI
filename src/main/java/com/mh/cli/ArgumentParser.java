@@ -37,7 +37,8 @@ public class ArgumentParser {
 
             if (token.equals("|")) {
                 if (currentCmd != null) {
-                    pipeline.add(new ParsedCommand(resolveAlias(currentCmd, aliases), new ArrayList<>(currentArgs)));
+                    ParsedCommand parsed = parseCommand(resolveAlias(currentCmd, aliases), currentArgs, registeredCommands);
+                    pipeline.add(parsed);
                     currentArgs.clear();
                     currentCmd = null;
                 }
@@ -45,9 +46,9 @@ public class ArgumentParser {
                 expectRedirect = true;
             } else if (expectRedirect) {
                 if (currentCmd != null) {
-                    ParsedCommand cmd = new ParsedCommand(resolveAlias(currentCmd, aliases), new ArrayList<>(currentArgs));
-                    cmd.redirectFile = token;
-                    pipeline.add(cmd);
+                    ParsedCommand parsed = parseCommand(resolveAlias(currentCmd, aliases), currentArgs, registeredCommands);
+                    parsed.redirectFile = token;
+                    pipeline.add(parsed);
                     currentArgs.clear();
                     currentCmd = null;
                     expectRedirect = false;
@@ -60,10 +61,26 @@ public class ArgumentParser {
         }
 
         if (currentCmd != null) {
-            pipeline.add(new ParsedCommand(resolveAlias(currentCmd, aliases), currentArgs));
+            ParsedCommand parsed = parseCommand(resolveAlias(currentCmd, aliases), currentArgs, registeredCommands);
+            pipeline.add(parsed);
         }
 
         return pipeline;
+    }
+
+    private static ParsedCommand parseCommand(String cmd, List<String> args, Set<String> registeredCommands) {
+        // Split aliased command into command and additional args
+        String[] parts = cmd.trim().split("\\s+", 2);
+        String command = parts[0];
+        List<String> allArgs = new ArrayList<>(args);
+        if (parts.length > 1) {
+            // Add arguments from the aliased command
+            String[] aliasArgs = parts[1].split("\\s+");
+            for (String arg : aliasArgs) {
+                allArgs.add(0, arg); // Prepend alias args to maintain order
+            }
+        }
+        return new ParsedCommand(command, allArgs);
     }
 
     private static List<String> tokenize(String input) {

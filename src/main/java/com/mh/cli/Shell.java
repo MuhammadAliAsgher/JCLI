@@ -23,27 +23,32 @@ public class Shell {
         registerCommands();
     }
 
-    private void registerCommands() {
-        commands.put("help", new HelpCommand(commands));
-        commands.put("echo", new EchoCommand());
-        commands.put("pwd", new PwdCommand());
-        commands.put("cd", new CdCommand());
-        commands.put("ls", new LsCommand());
-        commands.put("cp", new CpCommand());
-        commands.put("mv", new MvCommand());
-        commands.put("mkdir", new MkdirCommand());
-        commands.put("rmdir", new RmdirCommand());
-        commands.put("touch", new TouchCommand());
-        commands.put("rm", new RmCommand());
-        commands.put("rm -r", new RmRecursiveCommand());
-        commands.put("cat", new CatCommand());
-        commands.put("grep", new GrepCommand());
-        commands.put("wc", new WcCommand());
-        commands.put("head", new HeadCommand());
-        commands.put("tail", new TailCommand());
-        commands.put("sort", new SortCommand());
-        commands.put("exit", new ExitCommand());
-    }
+private void registerCommands() {
+    commands.put("help", new HelpCommand(commands));
+    commands.put("echo", new EchoCommand());
+    commands.put("pwd", new PwdCommand());
+    commands.put("cd", new CdCommand());
+    commands.put("ls", new LsCommand());
+    commands.put("cp", new CpCommand());
+    commands.put("mv", new MvCommand());
+    commands.put("mkdir", new MkdirCommand());
+    commands.put("rmdir", new RmdirCommand());
+    commands.put("touch", new TouchCommand());
+    commands.put("rm", new RmCommand());
+    commands.put("rm -r", new RmRecursiveCommand());
+    commands.put("cat", new CatCommand());
+    commands.put("grep", new GrepCommand());
+    commands.put("wc", new WcCommand());
+    commands.put("head", new HeadCommand());
+    commands.put("tail", new TailCommand());
+    commands.put("sort", new SortCommand());
+    commands.put("history", new HistoryCommand(history));
+    commands.put("clear", new ClearCommand());
+    commands.put("date", new DateCommand());
+    commands.put("alias", new AliasCommand(config));
+    commands.put("find", new FindCommand());
+    commands.put("exit", new ExitCommand());
+}
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
@@ -70,8 +75,7 @@ public class Shell {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     PrintStream ps = new PrintStream(baos);
                     PrintStream oldOut = System.out;
-                    // Redirect output for piped commands or commands with redirection
-                    if (i < pipeline.size() - 1 || cmd.redirectFile != null) {
+                    if (i < pipeline.size() - 1) {
                         System.setOut(ps);
                     }
                     command.execute(cmd.args, output.toString(), this);
@@ -79,7 +83,7 @@ public class Shell {
                     output = new StringBuilder(baos.toString());
                     if (cmd.redirectFile != null) {
                         Files.write(resolveSafePath(cmd.redirectFile), output.toString().getBytes(),
-                                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                         output = new StringBuilder();
                     }
                 }
