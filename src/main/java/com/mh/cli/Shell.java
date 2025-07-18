@@ -36,6 +36,12 @@ public class Shell {
         commands.put("touch", new TouchCommand());
         commands.put("rm", new RmCommand());
         commands.put("rm -r", new RmRecursiveCommand());
+        commands.put("cat", new CatCommand());
+        commands.put("grep", new GrepCommand());
+        commands.put("wc", new WcCommand());
+        commands.put("head", new HeadCommand());
+        commands.put("tail", new TailCommand());
+        commands.put("sort", new SortCommand());
         commands.put("exit", new ExitCommand());
     }
 
@@ -64,7 +70,8 @@ public class Shell {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     PrintStream ps = new PrintStream(baos);
                     PrintStream oldOut = System.out;
-                    if (i < pipeline.size() - 1) {
+                    // Redirect output for piped commands or commands with redirection
+                    if (i < pipeline.size() - 1 || cmd.redirectFile != null) {
                         System.setOut(ps);
                     }
                     command.execute(cmd.args, output.toString(), this);
@@ -72,7 +79,7 @@ public class Shell {
                     output = new StringBuilder(baos.toString());
                     if (cmd.redirectFile != null) {
                         Files.write(resolveSafePath(cmd.redirectFile), output.toString().getBytes(),
-                                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                         output = new StringBuilder();
                     }
                 }
