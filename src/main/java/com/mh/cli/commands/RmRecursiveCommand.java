@@ -11,17 +11,28 @@ import java.util.Scanner;
 public class RmRecursiveCommand implements Command {
     @Override
     public void execute(List<String> args, String input, Shell shell) throws IOException {
-        if (args.isEmpty()) throw new IOException("Usage: rm -r [dir]");
+        if (args.isEmpty()) {
+            throw new IOException("Usage: rm -r [dir]");
+        }
         Path path = shell.resolveSafePath(args.get(0));
-        if (!Files.isDirectory(path)) throw new IOException("Not a directory: " + args.get(0));
+        if (!Files.exists(path)) {
+            throw new IOException("Path does not exist: " + args.get(0));
+        }
+        if (!Files.isDirectory(path)) {
+            throw new IOException("Not a directory: " + args.get(0));
+        }
         System.out.print("Remove " + path + " and contents? (y/n): ");
-        if (!new Scanner(System.in).nextLine().trim().toLowerCase().startsWith("y")) return;
-        Files.walk(path).sorted(Comparator.reverseOrder()).forEach(p -> {
-            try {
-                Files.delete(p);
-            } catch (IOException e) {
-                System.err.println("Delete failed: " + e.getMessage());
-            }
-        });
+        if (!new Scanner(System.in).nextLine().trim().toLowerCase().startsWith("y")) {
+            return;
+        }
+        Files.walk(path)
+                .sorted(Comparator.reverseOrder())
+                .forEach(p -> {
+                    try {
+                        Files.delete(p);
+                    } catch (IOException e) {
+                        System.err.println("Delete failed for " + p + ": " + e.getMessage());
+                    }
+                });
     }
 }

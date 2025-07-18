@@ -14,7 +14,7 @@ public class ArgumentParser {
         }
     }
 
-    public static List<ParsedCommand> parse(String input, Map<String, String> aliases) {
+    public static List<ParsedCommand> parse(String input, Map<String, String> aliases, Set<String> registeredCommands) {
         List<ParsedCommand> pipeline = new ArrayList<>();
         List<String> tokens = tokenize(input);
         List<String> currentArgs = new ArrayList<>();
@@ -23,6 +23,18 @@ public class ArgumentParser {
 
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
+
+            // Check for multi-word command (e.g., "rm -r")
+            String potentialCmd = currentCmd == null ? token : currentCmd + " " + token;
+            if (currentCmd == null && i + 1 < tokens.size() && registeredCommands.contains(potentialCmd + " " + tokens.get(i + 1))) {
+                currentCmd = potentialCmd + " " + tokens.get(i + 1);
+                i++; // Skip the next token since it's part of the command
+                continue;
+            } else if (currentCmd == null && registeredCommands.contains(potentialCmd)) {
+                currentCmd = potentialCmd;
+                continue;
+            }
+
             if (token.equals("|")) {
                 if (currentCmd != null) {
                     pipeline.add(new ParsedCommand(resolveAlias(currentCmd, aliases), new ArrayList<>(currentArgs)));
@@ -68,7 +80,7 @@ public class ArgumentParser {
                     tokens.add(token.toString());
                     token = new StringBuilder();
                 }
-            } else if (c == '|' || c == '>' && !inQuotes) {
+            } else if ((c == '|' || c == '>') && !inQuotes) {
                 if (token.length() > 0) {
                     tokens.add(token.toString());
                     token = new StringBuilder();

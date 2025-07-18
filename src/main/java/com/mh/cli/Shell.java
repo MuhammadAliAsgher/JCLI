@@ -3,6 +3,7 @@ package com.mh.cli;
 import com.mh.cli.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -23,20 +24,20 @@ public class Shell {
     }
 
     private void registerCommands() {
-    commands.put("help", new HelpCommand(commands));
-    commands.put("echo", new EchoCommand());
-    commands.put("pwd", new PwdCommand());
-    commands.put("cd", new CdCommand());
-    commands.put("ls", new LsCommand());
-    commands.put("cp", new CpCommand());
-    commands.put("mv", new MvCommand());
-    commands.put("mkdir", new MkdirCommand());
-    commands.put("rmdir", new RmdirCommand());
-    commands.put("touch", new TouchCommand());
-    commands.put("rm", new RmCommand());
-    commands.put("rm -r", new RmRecursiveCommand());
-    commands.put("exit", new ExitCommand());
-}
+        commands.put("help", new HelpCommand(commands));
+        commands.put("echo", new EchoCommand());
+        commands.put("pwd", new PwdCommand());
+        commands.put("cd", new CdCommand());
+        commands.put("ls", new LsCommand());
+        commands.put("cp", new CpCommand());
+        commands.put("mv", new MvCommand());
+        commands.put("mkdir", new MkdirCommand());
+        commands.put("rmdir", new RmdirCommand());
+        commands.put("touch", new TouchCommand());
+        commands.put("rm", new RmCommand());
+        commands.put("rm -r", new RmRecursiveCommand());
+        commands.put("exit", new ExitCommand());
+    }
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
@@ -51,7 +52,7 @@ public class Shell {
             saveHistory();
 
             try {
-                List<ArgumentParser.ParsedCommand> pipeline = ArgumentParser.parse(input, config.getAliases());
+                List<ArgumentParser.ParsedCommand> pipeline = ArgumentParser.parse(input, config.getAliases(), commands.keySet());
                 StringBuilder output = new StringBuilder();
                 for (int i = 0; i < pipeline.size(); i++) {
                     ArgumentParser.ParsedCommand cmd = pipeline.get(i);
