@@ -23,12 +23,20 @@ public class Shell {
     }
 
     private void registerCommands() {
-        commands.put("help", new HelpCommand(commands));
-        commands.put("echo", new EchoCommand());
-        commands.put("pwd", new PwdCommand());
-        commands.put("cd", new CdCommand());
-        commands.put("exit", new ExitCommand());
-    }
+    commands.put("help", new HelpCommand(commands));
+    commands.put("echo", new EchoCommand());
+    commands.put("pwd", new PwdCommand());
+    commands.put("cd", new CdCommand());
+    commands.put("ls", new LsCommand());
+    commands.put("cp", new CpCommand());
+    commands.put("mv", new MvCommand());
+    commands.put("mkdir", new MkdirCommand());
+    commands.put("rmdir", new RmdirCommand());
+    commands.put("touch", new TouchCommand());
+    commands.put("rm", new RmCommand());
+    commands.put("rm -r", new RmRecursiveCommand());
+    commands.put("exit", new ExitCommand());
+}
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
