@@ -33,14 +33,14 @@ public class GrepCommand implements Command {
         if (!input.isEmpty()) {
             String[] lines = input.split("\n");
             for (int i = 0; i < lines.length; i++) {
-                if (p.matcher(lines[i]).find()) System.out.println((lineNum ? (i + 1) + ": " : "") + lines[i]);
+                if (p.matcher(lines[i]).find()) System.out.println((lineNum ? (i + 1) + ":" : "") + lines[i]);
             }
         } else {
             if (file == null) throw new IOException("Usage: grep [-i -n] pattern [file]");
             Path path = shell.resolveSafePath(file);
             List<String> lines = Files.readAllLines(path);
             for (int i = 0; i < lines.size(); i++) {
-                if (p.matcher(lines.get(i)).find()) System.out.println((lineNum ? (i + 1) + ": " : "") + lines.get(i));
+                if (p.matcher(lines.get(i)).find()) System.out.println((lineNum ? (i + 1) + ":" : "") + lines.get(i));
             }
         }
     }
