@@ -14,10 +14,15 @@ public class Shell {
     private List<String> history = new ArrayList<>();
     private Map<String, Command> commands = new HashMap<>();
     private Config config;
-    private static final Path HISTORY_FILE = Paths.get(System.getProperty("user.home"), ".cli_history");
+    private final Path historyFile;
     private static final int MAX_HISTORY = 1000;
 
     public Shell() {
+        this(Paths.get(System.getProperty("user.home"), ".cli_history"));
+    }
+
+    Shell(Path historyFile) {
+        this.historyFile = historyFile;
         config = new Config();
         loadHistory();
         registerCommands();
@@ -75,7 +80,8 @@ private void registerCommands() {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     PrintStream ps = new PrintStream(baos);
                     PrintStream oldOut = System.out;
-                    if (i < pipeline.size() - 1) {
+                    boolean hasDownstreamConsumer = i < pipeline.size() - 1 || cmd.redirectFile != null;
+                    if (hasDownstreamConsumer) {
                         System.setOut(ps);
                     }
                     command.execute(cmd.args, output.toString(), this);
@@ -96,8 +102,8 @@ private void registerCommands() {
 
     private void loadHistory() {
         try {
-            if (Files.exists(HISTORY_FILE)) {
-                history.addAll(Files.readAllLines(HISTORY_FILE));
+            if (Files.exists(historyFile)) {
+                history.addAll(Files.readAllLines(historyFile));
             }
         } catch (IOException e) {
             logger.warn("Failed to load history: {}", e.getMessage());
@@ -109,7 +115,7 @@ private void registerCommands() {
             if (history.size() > MAX_HISTORY) {
                 history = history.subList(history.size() - MAX_HISTORY, history.size());
             }
-            Files.write(HISTORY_FILE, history, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(historyFile, history, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             logger.warn("Failed to save history: {}", e.getMessage());
         }
