@@ -11,7 +11,8 @@
 [![Java](https://img.shields.io/badge/Java-21-orange.svg?style=for-the-badge&logo=openjdk)](https://openjdk.org/projects/jdk/21/)
 [![Maven](https://img.shields.io/badge/Maven-3.9+-blue.svg?style=for-the-badge&logo=apache-maven)](https://maven.apache.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/Build-Passing-success.svg?style=for-the-badge&logo=github-actions)]()
+[![CI](https://img.shields.io/github/actions/workflow/status/MuhammadAliAsgher/JCLI/ci.yml?branch=main&style=for-the-badge&logo=github-actions&label=CI)](https://github.com/MuhammadAliAsgher/JCLI/actions/workflows/ci.yml)
+[![Coverage](https://raw.githubusercontent.com/MuhammadAliAsgher/JCLI/main/.github/badges/jacoco.svg)](https://github.com/MuhammadAliAsgher/JCLI/actions/workflows/ci.yml)
 
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
 
@@ -394,10 +395,11 @@ open target/site/jacoco/index.html
 ```
 
 ### Test Coverage
-- **Unit Tests**: Individual command testing with mocks
-- **Integration Tests**: End-to-end workflow validation
-- **Security Tests**: Path traversal and input validation
-- **Performance Tests**: Memory and execution time validation
+CI-verified via JaCoCo on every push to `main` (see the coverage badge above; run `mvn test` and open `target/site/jacoco/index.html` locally for the full breakdown). As of this writing: **92.9% instruction / 92.5% line coverage**.
+
+- **Unit tests** per command, against real temporary files/directories and a real `Shell` instance (no mocking library is used)
+- **Integration tests** (`ShellIntegrationTest`, `ShellTest`) covering the REPL loop end-to-end: piping, output redirection, unknown commands, error handling
+- Path-traversal checks live alongside the relevant command's own tests (e.g. `CpCommandTest`, `ShellTest.resolveSafePathRejectsPathTraversalOutsideCurrentDir`) rather than as a separate suite
 
 ## 🔧 Advanced Configuration
 
