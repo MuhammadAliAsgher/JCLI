@@ -63,6 +63,45 @@ class CpCommandTest {
         assertThrows(IOException.class, () -> cmd.execute(List.of("src.txt", "../outside.txt"), "", shell));
     }
 
+    @Test
+    void testCpRecursiveCopiesDirectoryTree() throws IOException {
+        Files.createDirectory(tempDir.resolve("srcdir"));
+        Files.write(tempDir.resolve("srcdir/a.txt"), "a".getBytes());
+        Files.createDirectory(tempDir.resolve("destdir"));
+
+        cmd.execute(List.of("-r", "srcdir", "destdir"), "", shell);
+
+        assertEquals("a", Files.readString(tempDir.resolve("destdir/a.txt")));
+    }
+
+    @Test
+    void testCpInteractiveOverwriteConfirmedProceedsWithCopy() throws IOException {
+        Files.write(tempDir.resolve("dest.txt"), "old".getBytes());
+        InputStream originalIn = System.in;
+        System.setIn(new ByteArrayInputStream("y\n".getBytes()));
+        try {
+            cmd.execute(List.of("-i", "src.txt", "dest.txt"), "", shell);
+        } finally {
+            System.setIn(originalIn);
+        }
+
+        assertEquals("content", Files.readString(tempDir.resolve("dest.txt")));
+    }
+
+    @Test
+    void testCpInteractiveOverwriteDeclinedLeavesDestUnchanged() throws IOException {
+        Files.write(tempDir.resolve("dest.txt"), "old".getBytes());
+        InputStream originalIn = System.in;
+        System.setIn(new ByteArrayInputStream("n\n".getBytes()));
+        try {
+            cmd.execute(List.of("-i", "src.txt", "dest.txt"), "", shell);
+        } finally {
+            System.setIn(originalIn);
+        }
+
+        assertEquals("old", Files.readString(tempDir.resolve("dest.txt")));
+    }
+
     @AfterEach
     @SuppressWarnings("unused")
     void tearDown() throws IOException {
