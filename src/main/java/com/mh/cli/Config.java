@@ -11,16 +11,21 @@ import java.util.Map;
 public class Config {
     private Map<String, String> aliases = new HashMap<>();
     private String prompt = "%s";
-    private static final Path CONFIG_FILE = Paths.get(System.getProperty("user.home"), ".clirc");
+    private final Path configFile;
 
     public Config() {
+        this(Paths.get(System.getProperty("user.home"), ".clirc"));
+    }
+
+    Config(Path configFile) {
+        this.configFile = configFile;
         loadConfig();
     }
 
     private void loadConfig() {
         try {
-            if (Files.exists(CONFIG_FILE)) {
-                Files.readAllLines(CONFIG_FILE).forEach(line -> {
+            if (Files.exists(configFile)) {
+                Files.readAllLines(configFile).forEach(line -> {
                     if (line.startsWith("alias ")) {
                         String[] parts = line.substring(6).split("=", 2);
                         if (parts.length == 2) {
@@ -54,7 +59,7 @@ public class Config {
             StringBuilder config = new StringBuilder();
             config.append("prompt=").append(prompt).append("\n");
             aliases.forEach((k, v) -> config.append("alias ").append(k).append("=").append("'").append(v).append("'").append("\n"));
-            Files.write(CONFIG_FILE, config.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(configFile, config.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             System.err.println("Failed to save config: " + e.getMessage());
         }
