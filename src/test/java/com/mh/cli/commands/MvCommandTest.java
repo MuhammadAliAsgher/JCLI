@@ -65,6 +65,36 @@ class MvCommandTest {
         assertThrows(IOException.class, () -> cmd.execute(List.of("src.txt", "../outside.txt"), "", shell));
     }
 
+    @Test
+    void testMvInteractiveOverwriteConfirmedProceedsWithMove() throws IOException {
+        Files.write(tempDir.resolve("dest.txt"), "old".getBytes());
+        InputStream originalIn = System.in;
+        System.setIn(new ByteArrayInputStream("y\n".getBytes()));
+        try {
+            cmd.execute(List.of("-i", "src.txt", "dest.txt"), "", shell);
+        } finally {
+            System.setIn(originalIn);
+        }
+
+        assertFalse(Files.exists(tempDir.resolve("src.txt")));
+        assertEquals("content", Files.readString(tempDir.resolve("dest.txt")));
+    }
+
+    @Test
+    void testMvInteractiveOverwriteDeclinedLeavesBothFilesUnchanged() throws IOException {
+        Files.write(tempDir.resolve("dest.txt"), "old".getBytes());
+        InputStream originalIn = System.in;
+        System.setIn(new ByteArrayInputStream("n\n".getBytes()));
+        try {
+            cmd.execute(List.of("-i", "src.txt", "dest.txt"), "", shell);
+        } finally {
+            System.setIn(originalIn);
+        }
+
+        assertTrue(Files.exists(tempDir.resolve("src.txt")));
+        assertEquals("old", Files.readString(tempDir.resolve("dest.txt")));
+    }
+
     @AfterEach
     @SuppressWarnings("unused")
     void tearDown() throws IOException {

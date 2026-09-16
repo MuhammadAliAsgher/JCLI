@@ -5,7 +5,6 @@ import com.mh.cli.Shell;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class CpCommand implements Command {
     @Override
@@ -19,7 +18,7 @@ public class CpCommand implements Command {
         Path dest = shell.resolveSafePath(args.get(destIdx));
         if (interactive && Files.exists(dest)) {
             System.out.print("Overwrite " + dest + "? (y/n): ");
-            if (!new Scanner(System.in).nextLine().trim().toLowerCase().startsWith("y")) return;
+            if (!shell.readLine().trim().toLowerCase().startsWith("y")) return;
         }
         if (recursive && Files.isDirectory(src)) {
             Files.walk(src).forEach(p -> {

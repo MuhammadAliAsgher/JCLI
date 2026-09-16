@@ -5,7 +5,6 @@ import com.mh.cli.Shell;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class MvCommand implements Command {
     @Override
@@ -18,7 +17,7 @@ public class MvCommand implements Command {
         Path dest = shell.resolveSafePath(args.get(destIdx));
         if (interactive && Files.exists(dest)) {
             System.out.print("Overwrite " + dest + "? (y/n): ");
-            if (!new Scanner(System.in).nextLine().trim().toLowerCase().startsWith("y")) return;
+            if (!shell.readLine().trim().toLowerCase().startsWith("y")) return;
         }
         Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
     }

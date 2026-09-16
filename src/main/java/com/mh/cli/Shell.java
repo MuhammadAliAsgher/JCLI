@@ -15,6 +15,7 @@ public class Shell {
     private Map<String, Command> commands = new HashMap<>();
     private Config config;
     private final Path historyFile;
+    private Scanner inputScanner;
     private static final int MAX_HISTORY = 1000;
 
     public Shell() {
@@ -75,12 +76,11 @@ private void registerCommands() {
 }
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to Java CLI. Type 'help' for commands.");
 
         while (true) {
             System.out.print(config.getPrompt(currentDir) + "> ");
-            String input = scanner.nextLine().trim();
+            String input = readLine().trim();
             if (input.isEmpty()) continue;
 
             history.add(input);
@@ -146,6 +146,19 @@ private void registerCommands() {
 
     public void setCurrentDir(String currentDir) {
         this.currentDir = currentDir;
+    }
+
+    /** Single Scanner shared across the whole Shell instance's lifetime, so an
+     * interactive command's confirmation prompt (e.g. "Overwrite? (y/n)") never
+     * competes with this loop's own Scanner for the same underlying System.in
+     * stream -- two independent Scanners buffering the same stream corrupt each
+     * other's reads. Lazily created so tests that swap System.in after
+     * constructing the Shell still get the swapped stream. */
+    public String readLine() {
+        if (inputScanner == null) {
+            inputScanner = new Scanner(System.in);
+        }
+        return inputScanner.nextLine();
     }
 
     public Path resolveSafePath(String path) throws IOException {
