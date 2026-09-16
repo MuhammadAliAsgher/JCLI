@@ -25,14 +25,15 @@ class ArgumentParserTest {
 
     @Test
     void parsesMultiWordRegisteredCommand() {
-        // "rm -r" is registered as a two-word command, but parseCommand always re-splits
-        // the resolved command string on whitespace -- so "-r" ends up prepended to args,
-        // the same way it would for an alias. This is verified actual behavior, not assumed.
+        // "rm -r" is registered as a two-word command and must stay intact -- a prior bug
+        // here re-split it into command="rm", args=["-r", ...], which meant "rm -r" was
+        // unreachable through the real shell (dispatch resolves "rm", not "rm -r", and
+        // plain RmCommand doesn't understand "-r" as a flag). Verified via the built jar.
         var pipeline = ArgumentParser.parse("rm -r myfile", NO_ALIASES, COMMANDS);
 
         assertEquals(1, pipeline.size());
-        assertEquals("rm", pipeline.get(0).command);
-        assertEquals(List.of("-r", "myfile"), pipeline.get(0).args);
+        assertEquals("rm -r", pipeline.get(0).command);
+        assertEquals(List.of("myfile"), pipeline.get(0).args);
     }
 
     @Test

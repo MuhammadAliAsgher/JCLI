@@ -69,8 +69,17 @@ public class ArgumentParser {
     }
 
     private static ParsedCommand parseCommand(String cmd, List<String> args, Set<String> registeredCommands) {
+        String trimmed = cmd.trim();
+
+        // A literal registered multi-word command (e.g. "rm -r") must stay intact --
+        // only an alias-expanded string (e.g. "ls -la" from alias ll="ls -la") gets
+        // split into a command plus prepended extra args below.
+        if (registeredCommands.contains(trimmed)) {
+            return new ParsedCommand(trimmed, new ArrayList<>(args));
+        }
+
         // Split aliased command into command and additional args
-        String[] parts = cmd.trim().split("\\s+", 2);
+        String[] parts = trimmed.split("\\s+", 2);
         String command = parts[0];
         List<String> allArgs = new ArrayList<>(args);
         if (parts.length > 1) {
