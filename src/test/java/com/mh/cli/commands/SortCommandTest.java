@@ -22,7 +22,7 @@ class SortCommandTest {
     @SuppressWarnings("unused")
     void setUp() throws IOException {
         cmd = new SortCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("test");
         shell.setCurrentDir(tempDir.toString());
         Files.write(tempDir.resolve("file.txt"), "line2\nline1\nline3".getBytes());

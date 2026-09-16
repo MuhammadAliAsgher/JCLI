@@ -19,7 +19,7 @@ class PwdCommandTest {
     @SuppressWarnings("unused")
     void setUp() {
         cmd = new PwdCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         out = new ByteArrayOutputStream();
         originalOut = System.out;
         System.setOut(new PrintStream(out));

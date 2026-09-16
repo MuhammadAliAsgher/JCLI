@@ -22,7 +22,7 @@ class CatCommandTest {
     @SuppressWarnings("unused")
     void setUp() throws IOException {
         cmd = new CatCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("test");
         shell.setCurrentDir(tempDir.toString());
         Files.write(tempDir.resolve("file.txt"), "line1\nline2".getBytes());

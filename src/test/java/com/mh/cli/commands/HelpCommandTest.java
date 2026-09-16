@@ -18,7 +18,7 @@ class HelpCommandTest {
     @BeforeEach
     @SuppressWarnings("unused")
     void setUp() {
-        shell = new Shell();
+        shell = Shell.forTesting();
         Map<String, Command> commands = new HashMap<>();
         commands.put("test", new TestCommand());
         cmd = new HelpCommand(commands);

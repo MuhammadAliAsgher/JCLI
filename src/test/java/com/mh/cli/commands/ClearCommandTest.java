@@ -18,7 +18,7 @@ class ClearCommandTest {
     @SuppressWarnings("unused")
     void setUp() {
         cmd = new ClearCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         out = new ByteArrayOutputStream();
         originalOut = System.out;
         System.setOut(new PrintStream(out));

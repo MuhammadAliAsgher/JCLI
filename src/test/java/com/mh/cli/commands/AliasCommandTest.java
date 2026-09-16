@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.nio.file.*;
 import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,17 +20,19 @@ class AliasCommandTest {
     private PrintStream originalOut;
     private Path configFile;
 
+    private Path tempDir;
+
     @BeforeEach
     @SuppressWarnings("unused")
     void setUp() throws IOException {
-        config = new Config();
+        tempDir = Files.createTempDirectory("alias-test");
+        configFile = tempDir.resolve(".clirc");
+        config = new Config(configFile);
         cmd = new AliasCommand(config);
-        shell = new Shell();
+        shell = Shell.forTesting();
         out = new ByteArrayOutputStream();
         originalOut = System.out;
         System.setOut(new PrintStream(out));
-        configFile = Paths.get(System.getProperty("user.home"), ".clirc");
-        Files.deleteIfExists(configFile);
     }
 
     @Test
@@ -62,6 +65,8 @@ class AliasCommandTest {
     @SuppressWarnings("unused")
     void tearDown() throws IOException {
         System.setOut(originalOut);
-        Files.deleteIfExists(configFile);
+        Files.walk(tempDir).sorted(Comparator.reverseOrder()).forEach(p -> {
+            try { Files.deleteIfExists(p); } catch (IOException ignored) {}
+        });
     }
 }

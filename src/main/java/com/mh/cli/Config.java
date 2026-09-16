@@ -17,7 +17,7 @@ public class Config {
         this(Paths.get(System.getProperty("user.home"), ".clirc"));
     }
 
-    Config(Path configFile) {
+    public Config(Path configFile) {
         this.configFile = configFile;
         loadConfig();
     }

@@ -20,7 +20,7 @@ class HistoryCommandTest {
     void setUp() {
         history = new ArrayList<>(Arrays.asList("cmd1", "cmd2", "cmd3"));
         cmd = new HistoryCommand(history);
-        shell = new Shell();
+        shell = Shell.forTesting();
         out = new ByteArrayOutputStream();
         originalOut = System.out;
         System.setOut(new PrintStream(out));

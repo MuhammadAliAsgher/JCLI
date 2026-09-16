@@ -21,7 +21,7 @@ class MkdirCommandTest {
     @SuppressWarnings("unused")
     void setUp() throws IOException {
         cmd = new MkdirCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("test");
         shell.setCurrentDir(tempDir.toString());
         out = new ByteArrayOutputStream();

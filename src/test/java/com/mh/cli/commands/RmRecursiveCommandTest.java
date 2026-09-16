@@ -24,7 +24,7 @@ class RmRecursiveCommandTest {
     @SuppressWarnings("unused")
     void setUp() throws IOException {
         cmd = new RmRecursiveCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("test");
         shell.setCurrentDir(tempDir.toString());
         Files.createDirectory(tempDir.resolve("dir"));

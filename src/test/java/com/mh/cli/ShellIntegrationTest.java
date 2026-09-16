@@ -28,7 +28,7 @@ class ShellIntegrationTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("cli-integration-test");
         shell.setCurrentDir(tempDir.toString());
         
@@ -295,13 +295,5 @@ class ShellIntegrationTest {
                      // Ignore cleanup errors
                  }
              });
-        
-        // Clean up any CLI config files that might have been created during tests
-        try {
-            Files.deleteIfExists(Paths.get(System.getProperty("user.home"), ".clirc"));
-            Files.deleteIfExists(Paths.get(System.getProperty("user.home"), ".cli_history"));
-        } catch (IOException e) {
-            // Ignore cleanup errors
-        }
     }
 }

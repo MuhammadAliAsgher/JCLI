@@ -28,6 +28,25 @@ public class Shell {
         registerCommands();
     }
 
+    Shell(Path historyFile, Config config) {
+        this.historyFile = historyFile;
+        this.config = config;
+        loadHistory();
+        registerCommands();
+    }
+
+    /** Isolated Shell for tests: history and config both live in a throwaway temp
+     * directory instead of the real developer's ~/.cli_history and ~/.clirc. */
+    public static Shell forTesting() {
+        try {
+            Path tempDir = Files.createTempDirectory("jcli-test-shell");
+            Config isolatedConfig = new Config(tempDir.resolve(".clirc"));
+            return new Shell(tempDir.resolve(".cli_history"), isolatedConfig);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
 private void registerCommands() {
     commands.put("help", new HelpCommand(commands));
     commands.put("echo", new EchoCommand());

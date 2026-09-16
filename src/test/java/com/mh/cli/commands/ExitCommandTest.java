@@ -14,7 +14,7 @@ class ExitCommandTest {
     @BeforeEach
     void setUp() {
         cmd = new ExitCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
     }
 
     @Test

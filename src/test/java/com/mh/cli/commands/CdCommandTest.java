@@ -22,7 +22,7 @@ class CdCommandTest {
     @SuppressWarnings("unused")
     void setUp() throws IOException {
         cmd = new CdCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("test");
         shell.setCurrentDir(tempDir.toString());
         out = new ByteArrayOutputStream();

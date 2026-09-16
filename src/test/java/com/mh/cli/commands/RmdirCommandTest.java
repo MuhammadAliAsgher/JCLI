@@ -22,7 +22,7 @@ class RmdirCommandTest {
     @SuppressWarnings("unused")
     void setUp() throws IOException {
         cmd = new RmdirCommand();
-        shell = new Shell();
+        shell = Shell.forTesting();
         tempDir = Files.createTempDirectory("test");
         shell.setCurrentDir(tempDir.toString());
         Files.createDirectory(tempDir.resolve("dir"));
